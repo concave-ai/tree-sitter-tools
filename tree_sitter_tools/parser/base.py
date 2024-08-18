@@ -4,9 +4,8 @@ from pydantic import BaseModel
 class Symbol(BaseModel):
     id: str
     kind: str
-    start: tuple[int, int] | None
-    end: tuple[int, int] | None
     file_path: str
+    range: list[int]
 
 
 class ParseResult(BaseModel):

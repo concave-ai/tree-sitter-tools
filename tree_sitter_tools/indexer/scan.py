@@ -3,7 +3,7 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
-from parser.parser import parse_code
+from tree_sitter_tools.parser.parser import parse_code
 
 
 def is_python_package(path: Path):
@@ -36,7 +36,7 @@ class DirPackageScanner:
         namespace = path.name
         for p in path.iterdir():
             if p.is_file() and p.suffix == ".py":
-                self.add_file(namespace, p)
+                self.add_file(f"{namespace}.{p.stem}", p)
             elif p.is_dir():
                 self.scan_python_files(p, f"{namespace}.{p.name}")
 

@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "tree-sitter-tools"
-version = "0.1.1"
+version = "0.1.5"
 description = ""
 authors = ["SiyuChen <ryougi201@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.9"
 tree-sitter = "^0.22.3"
 pydantic = "^2.8.2"
 pyarrow = "^17.0.0"

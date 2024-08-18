@@ -1,26 +1,20 @@
 from pathlib import Path
 
-from indexer.scan import ModuleFile, DirPackageScanner
-from parser.base import Symbol
-from parser.parser import parse_code
 import pyarrow.parquet as pq
 import pyarrow as pa
-
 import time
 
+from tree_sitter_tools.indexer.scan import ModuleFile, DirPackageScanner
+from tree_sitter_tools.parser.base import Symbol
+from tree_sitter_tools.parser.parser import parse_code
 
 def symbol_to_dict(symbol: Symbol):
-    start_line, start_col = symbol.start if symbol.start else (None, None)
-    end_line, end_col = symbol.end if symbol.end else (None, None)
 
     return {
         "id": symbol.id,
         "kind": symbol.kind,
         "file_path": symbol.file_path,
-        "start_line": start_line,
-        "start_col": start_col,
-        "end_line": end_line,
-        "end_col": end_col
+        "range": symbol.range
     }
 
 
@@ -59,11 +53,8 @@ class SymbolIndexer:
                                      schema=pa.schema([
                                          pa.field('id', pa.string()),
                                          pa.field('kind', pa.dictionary(pa.int16(), pa.string())),
-                                         pa.field('start_line', pa.int32()),
-                                         pa.field('start_col', pa.int32()),
-                                         pa.field('end_line', pa.int32()),
-                                         pa.field('end_col', pa.int32()),
-                                        pa.field('file_path', pa.dictionary(pa.int16(), pa.string())),
+                                         pa.field('range', pa.list_(pa.int32(), 6)),
+                                         pa.field('file_path', pa.dictionary(pa.int16(), pa.string())),
                                      ]))
 
         pq.write_table(table, 'symbol_index.parquet',

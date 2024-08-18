@@ -4,8 +4,8 @@ import time
 import tree_sitter_python as tspython
 from tree_sitter import Language, Parser, Node
 
-from parser.base import ParseResult
-from parser.walker import PythonTreeWalker
+from tree_sitter_tools.parser.base import ParseResult
+from tree_sitter_tools.parser.walker import PythonTreeWalker
 
 PY_LANGUAGE = Language(tspython.language())
 parser = Parser(PY_LANGUAGE)
