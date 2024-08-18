@@ -7,11 +7,11 @@ from tree_sitter import Node
 from parser.walker import get_imports
 from utils.base import ImportsMap, check_node, Context
 
+
 class Occurrence(BaseModel):
     id: str
     name: str
     kind: str
-
 
 
 class Visitor:
@@ -29,6 +29,7 @@ class Visitor:
 
     def extend_occurrences(self, occurrences: List[Occurrence]):
         self.occurrences.extend(occurrences)
+
 
 #  _simple_statement: $ => choice(
 #       $.future_import_statement,
@@ -78,6 +79,7 @@ IGNORE_STATEMENTS = [
 TODO_STATEMENTS = [
 ]
 
+
 # case 'future_import_statement':
 #                 names = [i.text.decode() for i in child.named_children]
 #                 imports_map.add_import("__future__", names)
@@ -104,6 +106,7 @@ def get_future_imports_statement(node):
         for i in names
     ]
 
+
 def get_imports_statement(node):
     names = [i.text.decode() for i in node.named_children]
     return [
@@ -114,6 +117,7 @@ def get_imports_statement(node):
         )
         for i in names
     ]
+
 
 def get_import_from_statement(node):
     names = [i.text.decode() for i in node.named_children]
@@ -126,6 +130,7 @@ def get_import_from_statement(node):
         )
         for i in names[1:]
     ]
+
 
 def get_expression_statement(node: Node):
     child = node.children[0]
@@ -155,7 +160,6 @@ def get_expression_statement(node: Node):
 
 class BlockVisitor(Visitor):
 
-
     def visit(self, node):
         for child in node.children:
             if child.type in IGNORE_STATEMENTS:
@@ -177,12 +181,8 @@ class BlockVisitor(Visitor):
 
                 # case 'expression_statement':
 
-
-
-
                 case _:
                     logging.debug(f"Unsupported statement: {child.type}")
-
 
 
 class PythonTreeWalker:
