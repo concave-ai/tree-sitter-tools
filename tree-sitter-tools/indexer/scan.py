@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 
+from pydantic import BaseModel
+
 from parser.parser import parse_code
 
 
@@ -8,17 +10,20 @@ def is_python_package(path: Path):
     return (path / "__init__.py").exists()
 
 
+class ModuleFile(BaseModel):
+    name: str
+    path: str
+
+
 class DirPackageScanner:
-    def __init__(self, root_path: Path):
-        self.root_path = root_path
+    def __init__(self, work_path: Path):
+        self.work_path = work_path
         self.packages = []
-        self.files = []
+        self.files: list[ModuleFile] = []
 
     def add_file(self, namespace, path: Path):
-        self.files.append({
-            "name": f"{namespace}.{path.stem}",
-            "path": path
-        })
+        relative_path = path.relative_to(self.work_path)
+        self.files.append(ModuleFile(name=namespace, path=str(relative_path)))
 
     def scan_python_files(self, path, namespace):
         for p in path.iterdir():
@@ -48,35 +53,4 @@ class DirPackageScanner:
                     self.scan_dir(p)
 
     def scan(self):
-        self.scan_dir(self.root_path)
-
-
-if __name__ == "__main__":
-    p = "/Users/justwph/labs/hackathons/2024/libs/django"
-    scanner = DirPackageScanner(Path(p))
-    scanner.scan()
-    symbols = []
-    total_time = 0
-    func_count = 0
-    class_count = 0
-    var_count = 0
-
-    for f in scanner.files:
-        print(f"scanning {f['path']}")
-        result = parse_code(f["path"], f["name"])
-        symbols.extend(result.symbols)
-        total_time += result.time_used_ms
-        for s in result.symbols:
-            if s.kind == "function":
-                func_count += 1
-            elif s.kind == "class":
-                class_count += 1
-            elif s.kind == "variable":
-                var_count += 1
-
-    print(f"scanned {len(scanner.files)} files")
-    print("time used[ms]", total_time)
-    print("symbols:", len(symbols))
-    print("functions:", func_count)
-    print("classes:", class_count)
-    print("variables:", var_count)
+        self.scan_dir(self.work_path)

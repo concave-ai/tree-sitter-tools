@@ -2,6 +2,8 @@ from typing import List
 
 from tree_sitter import Node
 
+from parser.base import Symbol
+
 
 class ImportsMap:
     def __init__(self):
@@ -69,12 +71,14 @@ class PythonTreeWalker:
                  root_node: Node,
                  content_lines: List[str],
                  module_path: str,
+                 code_path: str
                  ):
         self.root_node = root_node
         self.content_lines = content_lines
         self.module_path = module_path
         self.symbols = []
         self.module_imports = []
+        self.code_path = code_path
 
     def visit(self):
         assert self.root_node.type == 'module'
@@ -156,9 +160,10 @@ class PythonTreeWalker:
     #     todo: add more
 
     def add_symbol(self, kind, id, start=None, end=None):
-        self.symbols.append({
-            "kind": kind,
-            "id": id,
-            "start": start,
-            "end": end,
-        })
+        self.symbols.append(Symbol(
+            kind=kind,
+            id=id,
+            start=start,
+            end=end,
+            file_path=self.code_path
+        ))
