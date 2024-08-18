@@ -24,6 +24,8 @@ def symbol_to_dict(symbol: Symbol):
     }
 
 
+
+
 class SymbolIndexer:
     def __init__(self, files: list[ModuleFile], work_path):
         self.work_path = work_path
